@@ -1,0 +1,26 @@
+# Livrables locaux (hors dépôt : spec Word, présentation, captures, .md)
+/docs/
+
+# Scripts de génération des livrables (docx / pptx / images)
+scripts/gen_*.py
+
+# Objets et binaires de compilation
+*.o
+*.i
+*.s
+/build/
+/pipelab
+/examples/ex_ls_wc
+/examples/ex_bidirectionnel
+
+# Données générées (gros fichier de test)
+/data/big.txt
+
+# Résultats de benchmark générés
+/benchmarks/results.csv
+
+# Fichiers parasites / OS
+Applications
+param*
+*.log
+.DS_Store
