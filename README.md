@@ -7,7 +7,7 @@ Domaine d'application : **traitement de fichiers texte volumineux**
 >
 > **Binôme :** Melek Ben Mansour & Fares Amdouni
 >
-> **Dépôt :** https://github.com/melek-esprit/PipeLab
+> **Dépôt :** https://github.com/melek-esprit/PipeLab-SE
 
 ---
 
