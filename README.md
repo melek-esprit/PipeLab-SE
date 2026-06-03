@@ -6,6 +6,8 @@ Domaine d'application : **traitement de fichiers texte volumineux**
 > Projet — Module *Systèmes d'Exploitation Avancés*
 >
 > **Binôme :** Melek Ben Mansour & Fares Amdouni
+>
+> **Dépôt :** https://github.com/melek-esprit/PipeLab
 
 ---
 
@@ -14,7 +16,7 @@ Domaine d'application : **traitement de fichiers texte volumineux**
 PipeLab++ est une application en **C/UNIX** qui traite des fichiers volumineux en
 exploitant simultanément :
 
-| Critère du sujet | Implémentation |
+| Fonctionnalité | Implémentation |
 |---|---|
 | **Multiprocessus** (nb configurable) | `fork()` × N (config.ini) |
 | **Multithreads** (nb configurable)   | Pool de threads `pthread` |
@@ -29,27 +31,7 @@ exploitant simultanément :
 
 ---
 
-## 2. Justification — Fidélité au cours
-
-Le **noyau** (fork/exec/pipe/dup2/wait) est intégralement issu du cours fourni :
-
-- `fork()` : slide 90
-- `exec*()` recouvrement : slides 102-106, 136
-- `pipe()` + `read`/`write` : slides 119-128
-- `dup2()` redirection : slide 134
-- `wait()`/`waitpid()` : slides 96-99
-- Exemple `ls -al | wc -l` : slide 135 (reproduit dans `examples/ex_ls_wc.c`)
-- Exemple bidirectionnel 5 entiers ×2 : slide 139 (`examples/ex_bidirectionnel.c`)
-- Compilation `gcc` (`-E`, `-S`, `-c`, link) : slides 16-18 (cibles du Makefile)
-
-Les modules **non-couverts** par le cours mais imposés par le sujet du projet
-(threads, sémaphores, mémoire partagée, files de messages, philosophes,
-barbier, benchmarking) sont implémentés en **modules isolés**, signalés en
-en-tête de chaque fichier source.
-
----
-
-## 3. Architecture
+## 2. Architecture
 
 ```
                        ┌──────────────────────────┐
@@ -76,7 +58,7 @@ en-tête de chaque fichier source.
 
 ---
 
-## 4. Structure des dossiers
+## 3. Structure des dossiers
 
 ```
 PipeLab/
@@ -103,14 +85,14 @@ PipeLab/
 │   ├── mq_utils.c
 │   ├── thread_pool.c
 │   ├── bench.c
-│   ├── worker_proc.c           # MULTIPROCESSUS + EXEC + PIPE
-│   ├── worker_thread.c         # MULTITHREADS + SHM + SEM
-│   ├── sync_philosophers.c     # Philosophes dîneurs
-│   ├── sync_barber.c           # Barbier endormi
-│   └── ipc_mq_demo.c           # File de messages
+│   ├── worker_proc.c           # multiprocessus + exec + pipe
+│   ├── worker_thread.c         # multithreads + shm + sémaphore
+│   ├── sync_philosophers.c     # philosophes dîneurs
+│   ├── sync_barber.c           # barbier endormi
+│   └── ipc_mq_demo.c           # file de messages
 ├── examples/
-│   ├── ex_ls_wc.c              # FIDÈLE slide 135
-│   └── ex_bidirectionnel.c     # FIDÈLE slide 139
+│   ├── ex_ls_wc.c              # pipe : ls | wc -l
+│   └── ex_bidirectionnel.c     # pipe bidirectionnel
 ├── scripts/
 │   ├── gen_big_file.sh
 │   └── run_bench.sh
@@ -120,13 +102,13 @@ PipeLab/
 
 ---
 
-## 5. Compilation
+## 4. Compilation
 
 ```bash
 make                # construit ./pipelab + examples/
-make preprocess     # gcc -E (slide 16)
-make assemble       # gcc -S (slide 17)
-make compile        # gcc -c (slide 18)
+make preprocess     # gcc -E (préprocesseur)
+make assemble       # gcc -S (assembleur)
+make compile        # gcc -c (compilation objet)
 make clean
 ```
 
@@ -156,7 +138,7 @@ Le dossier du projet devient :
 cd "/mnt/c/Users/melek/OneDrive/Bureau/Melek/Fac/Esprit/Projet SE/PipeLab"
 ```
 
-4. **Compiler et lancer** (commandes Linux habituelles ci-dessous) :
+4. **Compiler et lancer** :
 ```bash
 make
 ./scripts/gen_big_file.sh 20 data/big.txt   # générer un fichier de 20 Mo
@@ -164,14 +146,13 @@ make
 ./pipelab bench
 ```
 
-> Astuce : pour de meilleures performances, on peut copier le projet dans le
-> système de fichiers Linux (ex. `~/PipeLab`) plutôt que de travailler sous
-> `/mnt/c`. Les fonctions `mq_*` (files de messages POSIX) requièrent Linux et
-> fonctionnent sous WSL2.
+> Astuce : pour de meilleures performances, copier le projet dans le système de
+> fichiers Linux (ex. `~/PipeLab`) plutôt que de travailler sous `/mnt/c`.
+> Les files de messages POSIX (`mq_*`) requièrent Linux / WSL2.
 
 ---
 
-## 6. Utilisation
+## 5. Utilisation
 
 ### a) Préparer un fichier volumineux
 ```bash
@@ -202,16 +183,16 @@ chmod +x scripts/run_bench.sh
 Les résultats sont écrits dans `benchmarks/results.csv` :
 ```
 label,workers,items,elapsed_ms,throughput_items_per_s
-sequential,1,327680,42.10,7782898
-multiprocess,4,327680,18.55,17665229
-multithread,4,327680,12.30,26640650
+sequential,1,313008,11018.55,28407
+multiprocess,4,313008,753.00,415679
+multithread,4,313008,4021.06,77842
 ```
 
 ---
 
-## 7. Mapping critères → fichiers
+## 6. Mapping fonctionnalités → fichiers
 
-| Critère | Fichier(s) |
+| Fonctionnalité | Fichier(s) |
 |---|---|
 | Multiprocessus configurable          | `src/worker_proc.c` + `config/config.ini` |
 | Multithreads configurable            | `src/worker_thread.c` + `src/thread_pool.c` |
@@ -226,17 +207,14 @@ multithread,4,327680,12.30,26640650
 
 ---
 
-## 8. Note sur l'équité du benchmark
+## 7. Note sur l'équité du benchmark
 
 Le mode `proc` **découpe le fichier en N tranches d'octets distinctes** :
 chaque processus fils traite exactement `1/N` du fichier (et non le fichier
 entier N fois). Le mode `thread` applique le même principe. La comparaison
-`sequential` vs `multiprocess` vs `multithread` porte donc bien sur la **même
+`sequential` vs `multiprocess` vs `multithread` porte donc sur la **même
 quantité de travail**, ce qui rend le benchmark équitable.
 
 Le découpage par octets est **exact pour `wc -l`** : chaque caractère `'\n'`
 appartient à une seule tranche, donc la somme des comptes par tranche est
-égale au compte total du fichier. (Pour `grep -c`, une ligne coupée à la
-frontière d'une tranche peut être comptée de façon approximative — acceptable
-pour la démonstration.)
-
+égale au compte total du fichier.
